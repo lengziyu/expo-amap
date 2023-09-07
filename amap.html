@@ -1,12 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高德定位</title>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=d8edf80fc4f1813a3bbe452d683bb907"></script>
 </head>
 <body>
-  <div>hhhh </div>
+    <script>
+        var map = new AMap.Map('container', {
+            resizeEnable: true
+        });
+
+        map.plugin('AMap.Geolocation', function() {
+            var geolocation = new AMap.Geolocation({
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0,
+                convert: true,
+                showButton: true,
+                buttonPosition: 'LB',
+                buttonOffset: new AMap.Pixel(10, 20),
+                showMarker: true,
+                showCircle: true,
+                panToLocation: true,
+                zoomToAccuracy:true
+            });
+            map.addControl(geolocation);
+            geolocation.getCurrentPosition();
+            AMap.event.addListener(geolocation, 'complete', onComplete);
+            AMap.event.addListener(geolocation, 'error', onError);
+
+            function onComplete(data) {
+                // 定位信息
+                var str = ['定位成功'];
+                str.push('经度：' + data.position.getLng());
+                str.push('纬度：' + data.position.getLat());
+                alert(str.join('\n'));
+                window.ReactNativeWebView.postMessage(JSON.stringify(data));
+            }
+
+            function onError(data) {
+              window.ReactNativeWebView.postMessage(JSON.stringify(data));
+                // alert('定位失败', JSON.stringify(data));
+            }
+        });
+    </script>
 </body>
 </html>
